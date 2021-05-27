@@ -2,14 +2,17 @@
   <div>
     <h1>hogehoge</h1>
     <button @click="increment()">+1</button>
-    <p>{{state.count}}</p>
+    <p>state.count: {{state.count}}</p>
+    <p>refCount: {{refCount}}</p>
+    <p>{{ isOdd ? '奇数' : '偶数'}}</p>
+    <p>watchCountTwice: {{ watchCountTwice }}</p>
   </div>
 </template>
 import { defineComponent } from 'vue'
 import HelloWorld from '@/components/HelloWorld.vue'-
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { computed, defineComponent, reactive, ref, watch } from 'vue'
 
 interface State {
   count: number;
@@ -21,14 +24,26 @@ export default defineComponent({
     const state = reactive<State>({
       count: 0
     })
+    const refCount = ref(0)
     const increment = () => {
       state.count++
-      console.log(state)
+      refCount.value++
     }
+    const isOdd = computed(() => state.count % 2 === 1)
+    let watchCountTwice = 0
 
+    watch(refCount, () => {
+      console.log(state)
+      watchCountTwice = state.count * 2
+    })
+
+    // ここでリターンしたやつだけ使える
     return {
       state,
-      increment
+      refCount,
+      increment,
+      isOdd,
+      watchCountTwice
     }
   }
 })
